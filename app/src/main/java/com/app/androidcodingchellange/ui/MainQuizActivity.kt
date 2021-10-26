@@ -2,26 +2,25 @@ package com.app.androidcodingchellange.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.androidcodingchellange.BaseActivity
+import com.app.androidcodingchellange.R
 import com.app.androidcodingchellange.data.models.Answers
-import com.app.androidcodingchellange.data.models.QuizSchemaResponse
+import com.app.androidcodingchellange.data.models.Question
 import com.app.androidcodingchellange.databinding.MainQuizActivityBinding
 import com.app.androidcodingchellange.utils.ANSWER_TYPE_MULTI_CHOICE
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import org.json.JSONException
-import org.json.JSONObject
 
 
 @AndroidEntryPoint
-class MainQuizActivity : BaseActivity() {
+class MainQuizActivity : BaseActivity(), View.OnClickListener {
     private val TAG = "MainQuizActivity"
     private lateinit var binding: MainQuizActivityBinding
     private lateinit var answersListingAdapter: AnswersListingAdapter
@@ -40,8 +39,12 @@ class MainQuizActivity : BaseActivity() {
                 when (events) {
                     is MainQuizViewModel.QuizSchemaEvents.Success -> {
                         binding.pbLoading.isVisible = false
-                        Log.i(TAG, events.result.toString())
-                        createQuestionVew(questions = events.result)
+                        Log.i(TAG, events.questionObject.toString())
+                        createQuestionVew(
+                            events.questionToPopulateIndex,
+                            events.totalQuestions,
+                            events.questionObject
+                        )
                     }
                     is MainQuizViewModel.QuizSchemaEvents.Failure -> {
                         binding.pbLoading.isVisible = false
@@ -55,22 +58,27 @@ class MainQuizActivity : BaseActivity() {
                 }
             }
         }
+
+        binding.btnCheck.setOnClickListener(this)
     }
 
-    private fun createQuestionVew(questToPopIndex: Int = 0, questions: QuizSchemaResponse) {
-        val questionObject = questions.questions[questToPopIndex]
+    private fun createQuestionVew(
+        questToPopIndex: Int,
+        totalQCount: Int,
+        questionObject: Question
+    ) {
         binding.textViewQuestion.text = questionObject.question
 
-        if (questionObject.questionImageUrl != null) {
+        if (questionObject.questionImageUrl.isNullOrEmpty().not()) {
             binding.imageVewQuestion.isVisible = true
             Picasso.get().load(questionObject.questionImageUrl).into(binding.imageVewQuestion)
         } else {
             binding.imageVewQuestion.isVisible = false
         }
         if (questToPopIndex == 0)
-            setTotalQuestionsCount(questions.questions.size)
+            setTotalQuestionsCount(totalQCount)
         else
-            updateQuestionsProgress(questToPopIndex + 1, questions.questions.size)
+            updateQuestionsProgress(questToPopIndex + 1, totalQCount)
 
         val answers = questionObject.answers
         val answersList: ArrayList<Answers> = ArrayList()
@@ -99,5 +107,13 @@ class MainQuizActivity : BaseActivity() {
     private fun createQuestionsCountString(populatedQCount: Int = 1, totalQCount: Int): String {
         return StringBuilder().append("Question ").append(populatedQCount).append(" of ")
             .append(totalQCount).toString()
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.btn_check -> {
+                viewModel.loadNextQuestion()
+            }
+        }
     }
 }
