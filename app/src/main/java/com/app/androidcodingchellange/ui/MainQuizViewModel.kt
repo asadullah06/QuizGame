@@ -1,5 +1,6 @@
 package com.app.androidcodingchellange.ui
 
+import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.androidcodingchellange.data.models.Question
@@ -7,6 +8,8 @@ import com.app.androidcodingchellange.data.models.QuizSchemaResponse
 import com.app.androidcodingchellange.repositories.MainQuizRepository
 import com.app.androidcodingchellange.utils.DispatcherProvider
 import com.app.androidcodingchellange.utils.Resource
+import com.app.androidcodingchellange.utils.TOTAL_ANSWER_COUNT_DOWN
+import com.app.androidcodingchellange.utils.TOTAL_QUESTION_COUNT_DOWN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +23,8 @@ class MainQuizViewModel @Inject constructor(
 ) : ViewModel() {
     lateinit var response: QuizSchemaResponse
     var questionToPopulateIndex = 0
+    lateinit var questionCountDown: CountDownTimer
+    lateinit var answerCountDown: CountDownTimer
 
     sealed class QuizSchemaEvents {
         class Success(
@@ -30,8 +35,19 @@ class MainQuizViewModel @Inject constructor(
 
         class Failure(val errorText: String) : QuizSchemaEvents()
         object Loading : QuizSchemaEvents()
+        class CheckIsAnswerCorrect(val questionObject: Question) : QuizSchemaEvents()
         object Empty : QuizSchemaEvents()
     }
+
+    sealed class TimerEvents {
+        class OnStarted(val totalTime: Long) : TimerEvents()
+        class OnTick(val long: Long) : TimerEvents()
+        object OnFinished : TimerEvents()
+        object Empty : TimerEvents()
+    }
+
+    val questionTimerStateFlow = MutableStateFlow<TimerEvents>(TimerEvents.Empty)
+    val answerTimerStateFlow = MutableStateFlow<TimerEvents>(TimerEvents.Empty)
 
     private val _quizSchema = MutableStateFlow<QuizSchemaEvents>(QuizSchemaEvents.Empty)
     val quizSchema: StateFlow<QuizSchemaEvents> = _quizSchema
@@ -66,4 +82,59 @@ class MainQuizViewModel @Inject constructor(
             )
         }
     }
+
+    fun startQuestionCountDown() {
+        viewModelScope.launch(dispatcher.main) {
+            questionTimerStateFlow.value = TimerEvents.OnStarted(TOTAL_QUESTION_COUNT_DOWN)
+        }
+        questionCountDown = object : CountDownTimer(TOTAL_QUESTION_COUNT_DOWN, 1000) {
+            override fun onTick(p0: Long) {
+                viewModelScope.launch(dispatcher.main) {
+                    questionTimerStateFlow.value = TimerEvents.OnTick(p0)
+                }
+            }
+
+            override fun onFinish() {
+                viewModelScope.launch(dispatcher.main) {
+                    questionTimerStateFlow.value = TimerEvents.OnFinished
+                }
+            }
+        }.start()
+    }
+
+    fun checkIsAnswerCorrect(){
+        viewModelScope.launch {
+            _quizSchema.value = QuizSchemaEvents.CheckIsAnswerCorrect(response.questions[questionToPopulateIndex])
+        }
+    }
+
+    fun stopQuestionCountDown() {
+        if (::questionCountDown.isInitialized)
+            questionCountDown.cancel()
+    }
+
+    fun startAnswerCountDown() {
+        viewModelScope.launch(dispatcher.main) {
+            answerTimerStateFlow.value = TimerEvents.OnStarted(TOTAL_ANSWER_COUNT_DOWN)
+        }
+        answerCountDown = object : CountDownTimer(TOTAL_ANSWER_COUNT_DOWN, 1000) {
+            override fun onTick(p0: Long) {
+                viewModelScope.launch(dispatcher.main) {
+                    answerTimerStateFlow.value = TimerEvents.OnTick(p0)
+                }
+            }
+
+            override fun onFinish() {
+                viewModelScope.launch(dispatcher.main) {
+                    answerTimerStateFlow.value = TimerEvents.OnFinished
+                }
+            }
+        }.start()
+    }
+
+    fun stopAnswerCountDown() {
+        if (::answerCountDown.isInitialized)
+            answerCountDown.cancel()
+    }
+
 }

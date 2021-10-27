@@ -33,33 +33,10 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
         setContentView(binding.root)
 
         viewModel.getQuestions()
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.quizSchema.collect { events ->
-                when (events) {
-                    is MainQuizViewModel.QuizSchemaEvents.Success -> {
-                        binding.pbLoading.isVisible = false
-                        Log.i(TAG, events.questionObject.toString())
-                        createQuestionVew(
-                            events.questionToPopulateIndex,
-                            events.totalQuestions,
-                            events.questionObject
-                        )
-                    }
-                    is MainQuizViewModel.QuizSchemaEvents.Failure -> {
-                        binding.pbLoading.isVisible = false
-                        Snackbar.make(binding.root, events.errorText, Snackbar.LENGTH_LONG).show()
-                        Log.e(TAG, events.errorText)
-                    }
-                    is MainQuizViewModel.QuizSchemaEvents.Loading -> {
-                        binding.pbLoading.isVisible = true
-                    }
-                    else -> Unit
-                }
-            }
-        }
-
+        collectResponseEvents()
         binding.btnCheck.setOnClickListener(this)
+        collectQTimerEvents()
+        collectATimerEvents()
     }
 
     private fun createQuestionVew(
@@ -86,7 +63,8 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
             val item = Answers(it.value, it.key)
             answersList.add(item)
         }
-        val isAnswersTypeMultiSelect = questionObject.type == ANSWER_TYPE_MULTI_CHOICE
+        val isAnswersTypeMultiSelect = (questionObject.type == ANSWER_TYPE_MULTI_CHOICE) ||
+                (questionObject.correctAnswer.split(",").size > 1)
         answersListingAdapter = AnswersListingAdapter(isAnswersTypeMultiSelect, answersList)
         binding.answersRecyclerview.adapter = answersListingAdapter
         binding.answersRecyclerview.layoutManager = LinearLayoutManager(this)
@@ -112,7 +90,110 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btn_check -> {
-                viewModel.loadNextQuestion()
+                if (binding.btnCheck.text == getString(R.string.check)) {
+                    viewModel.checkIsAnswerCorrect()
+                    binding.btnCheck.text = getString(R.string.next)
+                } else
+                    viewModel.loadNextQuestion()
+            }
+        }
+    }
+
+    private fun collectResponseEvents() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.quizSchema.collect { events ->
+                when (events) {
+                    is MainQuizViewModel.QuizSchemaEvents.Success -> {
+                        binding.pbLoading.isVisible = false
+                        Log.i(TAG, events.questionObject.toString())
+                        createQuestionVew(
+                            events.questionToPopulateIndex,
+                            events.totalQuestions,
+                            events.questionObject
+                        )
+                        binding.btnCheck.text = getString(R.string.check)
+                        //Below methods are called to stop answer timer if on and start question time
+                        viewModel.stopAnswerCountDown()
+                        viewModel.startQuestionCountDown()
+                    }
+                    is MainQuizViewModel.QuizSchemaEvents.CheckIsAnswerCorrect -> {
+                        Log.i(TAG, "is answer correct checking")
+                        answersListingAdapter.setCorrectAnswer(events.questionObject.correctAnswer)
+                        answersListingAdapter.clearItemsClick()
+
+                        //Below methods are called to stop question and start answer time
+                        viewModel.stopQuestionCountDown()
+                        viewModel.startAnswerCountDown()
+                    }
+                    is MainQuizViewModel.QuizSchemaEvents.Failure -> {
+                        binding.pbLoading.isVisible = false
+                        Snackbar.make(binding.root, events.errorText, Snackbar.LENGTH_LONG).show()
+                        Log.e(TAG, events.errorText)
+                    }
+                    is MainQuizViewModel.QuizSchemaEvents.Loading -> {
+                        binding.pbLoading.isVisible = true
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    private fun collectQTimerEvents() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.questionTimerStateFlow.collect { events ->
+                when (events) {
+                    is MainQuizViewModel.TimerEvents.OnStarted -> {
+                        Log.i(
+                            TAG,
+                            "Question count down started ${CommonMethods.formatToDigitalClock(events.totalTime)}"
+                        )
+                        binding.textViewTimer.text =
+                            CommonMethods.formatToDigitalClock(events.totalTime)
+                    }
+                    is MainQuizViewModel.TimerEvents.OnTick -> {
+                        Log.i(
+                            TAG,
+                            "Question count down ${CommonMethods.formatToDigitalClock(events.long)}"
+                        )
+                        binding.textViewTimer.text = CommonMethods.formatToDigitalClock(events.long)
+                    }
+                    is MainQuizViewModel.TimerEvents.OnFinished -> {
+                        Log.i(TAG, "QuestionTimerFinished")
+                        viewModel.checkIsAnswerCorrect()
+                        viewModel.startAnswerCountDown()
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    private fun collectATimerEvents() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.answerTimerStateFlow.collect { events ->
+                when (events) {
+                    is MainQuizViewModel.TimerEvents.OnStarted -> {
+                        Log.i(
+                            TAG,
+                            "answer count down started ${CommonMethods.formatToDigitalClock(events.totalTime)}"
+                        )
+                        binding.textViewTimer.text =
+                            CommonMethods.formatToDigitalClock(events.totalTime)
+                    }
+                    is MainQuizViewModel.TimerEvents.OnTick -> {
+                        Log.i(
+                            TAG,
+                            "answer count down ${CommonMethods.formatToDigitalClock(events.long)}"
+                        )
+                        binding.textViewTimer.text = CommonMethods.formatToDigitalClock(events.long)
+                    }
+                    is MainQuizViewModel.TimerEvents.OnFinished -> {
+                        Log.i(TAG, "AnswerTimerFinished")
+                        viewModel.loadNextQuestion()
+                    }
+                    else -> Unit
+                }
             }
         }
     }

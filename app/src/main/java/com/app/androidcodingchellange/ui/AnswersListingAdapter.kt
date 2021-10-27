@@ -1,15 +1,14 @@
 package com.app.androidcodingchellange.ui
 
-import android.os.Build
-import android.text.Html
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.RadioGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.text.HtmlCompat
-import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.app.androidcodingchellange.R
@@ -17,18 +16,37 @@ import com.app.androidcodingchellange.data.models.Answers
 
 
 class AnswersListingAdapter(
-    val isAnswersTypeMultiSelect: Boolean,
+    private val isAnswersTypeMultiSelect: Boolean,
     var answerOptionsList: List<Answers>,
 ) :
     RecyclerView.Adapter<AnswersListingAdapter.ViewHolder>() {
+    val TAG = "AnswersListingAdapter"
+    var checkAnswerFlag = false
+    private var clearItemsClicksOnFlag = false
 
+    fun clearItemsClick() {
+        clearItemsClicksOnFlag = true
+        notifyDataSetChanged()
+    }
 
-    private var correctAnswer: String = ""
-        get() = field
-        set(value) {
-            field = value
+    fun setCorrectAnswer(correctAnswer: String) {
+        val correctAnswersArray = correctAnswer.split(",")
+        if (correctAnswersArray.size > 1) {
+            answerOptionsList.forEach {
+                if (correctAnswersArray.contains(it.optionKey)) {
+                    it.isCorrectOption = true
+                }
+            }
+        } else {
+            answerOptionsList.forEach {
+                if (correctAnswer == it.optionKey) {
+                    it.isCorrectOption = true
+                }
+            }
         }
-
+        checkAnswerFlag = true
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -41,6 +59,50 @@ class AnswersListingAdapter(
         holder.checkBox.isVisible = isAnswersTypeMultiSelect
         holder.checkBox.isChecked = answer.isOptionSelected
         holder.textView.text = answer.option
+        holder.checkBox.isEnabled =false
+
+        if (isAnswersTypeMultiSelect.not()) {
+            if (answer.isOptionSelected) {
+                holder.parentLayout.setBackgroundColor(Color.GRAY)
+                holder.textView.setTextColor(Color.GREEN)
+            } else {
+                holder.parentLayout.setBackgroundColor(Color.WHITE)
+                holder.textView.setTextColor(Color.BLACK)
+            }
+        }
+        if (checkAnswerFlag) {
+            when (getBackgroundColorCode(answer)) {
+                1 -> {
+                    holder.parentLayout.setBackgroundColor(Color.GREEN)
+                    holder.textView.setTextColor(Color.WHITE)
+                }
+                2 -> {
+                    holder.parentLayout.setBackgroundColor(Color.RED)
+                    holder.textView.setTextColor(Color.WHITE)
+                }
+                3 -> {
+                    holder.parentLayout.setBackgroundColor(Color.WHITE)
+                    holder.textView.setTextColor(Color.BLACK)
+                }
+            }
+        }
+        if (clearItemsClicksOnFlag) {
+            holder.parentLayout.setOnClickListener(null)
+        } else {
+            holder.parentLayout.setOnClickListener {
+                if (!isAnswersTypeMultiSelect) {
+                    for (i in answerOptionsList.indices) {
+                        if (answerOptionsList[i].isOptionSelected) {
+                            answerOptionsList[i].isOptionSelected = false
+                            notifyItemChanged(i)
+                        }
+                    }
+                    Log.i(TAG, "Options selections are reset")
+                }
+                answer.isOptionSelected = true
+                notifyItemChanged(position)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
@@ -51,7 +113,8 @@ class AnswersListingAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val checkBox: CheckBox = view.findViewById(R.id.check_box_answer)
         val textView: TextView = view.findViewById(R.id.text_view_answer)
-        val parentLayout: CardView = view.findViewById(R.id.parent_layout)
+        val parentLayout: ConstraintLayout = view.findViewById(R.id.parent_layout)
+
     }
 
     private fun getBackgroundColorCode(item: Answers): Int {
@@ -62,5 +125,9 @@ class AnswersListingAdapter(
         } else { // white
             3
         }
+    }
+
+    private fun setItemViewColors() {
+
     }
 }
