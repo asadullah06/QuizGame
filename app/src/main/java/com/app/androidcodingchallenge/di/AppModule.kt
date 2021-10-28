@@ -5,7 +5,9 @@ import androidx.room.Room
 import com.app.androidcodingchallenge.data.QuizSchemaApi
 import com.app.androidcodingchallenge.data.room.GameScoresDao
 import com.app.androidcodingchallenge.data.room.GameScoresDatabase
+import com.app.androidcodingchallenge.repositories.DefaultGameScoreRepository
 import com.app.androidcodingchallenge.repositories.DefaultMainQuizRepository
+import com.app.androidcodingchallenge.repositories.GameScoresRepository
 import com.app.androidcodingchallenge.repositories.MainQuizRepository
 import com.app.androidcodingchallenge.utils.BASE_URL
 import com.app.androidcodingchallenge.utils.DispatcherProvider
@@ -26,7 +28,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTestString() = "This is a string we will inject"
+    fun provideTestString() = "The Quiz Game"
 
     @Singleton
     @Provides
@@ -69,5 +71,11 @@ object AppModule {
     fun provideGameScoresDAO(gameScoresDatabase: GameScoresDatabase): GameScoresDao {
         return gameScoresDatabase.gameScoresDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideGameScoresRepository(gameScoresDao: GameScoresDao): GameScoresRepository =
+        DefaultGameScoreRepository(gameScoresDao)
+
 
 }

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidCodingChallenge">
         <activity
-            android:name="com.app.androidcodingchallenge.ui.SplashScreen"
+            android:name="com.app.androidcodingchallenge.ui.gameLauncher.SplashScreen"
             android:exported="true"
             android:theme="@style/Theme.AndroidCodingChallenge.NoActionBar">
             <intent-filter>
@@ -22,8 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.app.androidcodingchallenge.ui.GameDashboardActivity" />
-        <activity android:name="com.app.androidcodingchallenge.ui.MainQuizActivity" />
+        <activity android:name="com.app.androidcodingchallenge.ui.gameDashboard.GameDashboardActivity" />
+        <activity
+            android:name="com.app.androidcodingchallenge.ui.gameMainQuiz.MainQuizActivity"
+
+            android:theme="@style/Theme.AndroidCodingChallenge.NoActionBar" />
     </application>
 
 </manifest>

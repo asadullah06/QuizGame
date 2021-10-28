@@ -11,4 +11,6 @@ data class GameScoresEntity(
     var id: Int,
     @ColumnInfo(name = "score")
     var score: Long
-)
+) {
+    constructor(score: Long) : this(0, score)
+}
