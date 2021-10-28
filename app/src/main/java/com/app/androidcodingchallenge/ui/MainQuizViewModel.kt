@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.androidcodingchallenge.data.models.Question
 import com.app.androidcodingchallenge.data.models.QuizSchemaResponse
+import com.app.androidcodingchallenge.repositories.GameScoresRepository
 import com.app.androidcodingchallenge.repositories.MainQuizRepository
 import com.app.androidcodingchallenge.utils.DispatcherProvider
 import com.app.androidcodingchallenge.utils.Resource
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainQuizViewModel @Inject constructor(
-    private val repository: MainQuizRepository,
+    private val mainQuizRepository: MainQuizRepository,
+    private val gameScoresRepository: GameScoresRepository,
     private val dispatcher: DispatcherProvider
 ) : ViewModel() {
     lateinit var response: QuizSchemaResponse
@@ -57,7 +59,7 @@ class MainQuizViewModel @Inject constructor(
         viewModelScope.launch(dispatcher.io) {
             _quizSchema.value = QuizSchemaEvents.Loading
 
-            when (val quizSchemaResponse = repository.getQuestions()) {
+            when (val quizSchemaResponse = mainQuizRepository.getQuestions()) {
                 is Resource.Error -> _quizSchema.value =
                     QuizSchemaEvents.Failure(quizSchemaResponse.message!!)
                 is Resource.Success -> {
@@ -102,9 +104,10 @@ class MainQuizViewModel @Inject constructor(
         }.start()
     }
 
-    fun checkIsAnswerCorrect(){
+    fun checkIsAnswerCorrect() {
         viewModelScope.launch {
-            _quizSchema.value = QuizSchemaEvents.CheckIsAnswerCorrect(response.questions[questionToPopulateIndex])
+            _quizSchema.value =
+                QuizSchemaEvents.CheckIsAnswerCorrect(response.questions[questionToPopulateIndex])
         }
     }
 
@@ -136,5 +139,4 @@ class MainQuizViewModel @Inject constructor(
         if (::answerCountDown.isInitialized)
             answerCountDown.cancel()
     }
-
 }

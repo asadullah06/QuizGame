@@ -6,11 +6,14 @@ import android.view.View
 import com.app.androidcodingchallenge.BaseActivity
 import com.app.androidcodingchallenge.R
 import com.app.androidcodingchallenge.databinding.HomeScreenActivityBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Main Menu Screen will show the possible features of the screen i.e
  * start new game and see highest from all quizzes.
  */
+
+@AndroidEntryPoint
 class GameDashboardActivity : BaseActivity(), View.OnClickListener {
     lateinit var binding: HomeScreenActivityBinding
     override fun onCreate(savedInstanceState: Bundle?) {
