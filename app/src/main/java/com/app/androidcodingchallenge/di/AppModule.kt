@@ -1,17 +1,16 @@
-package com.app.androidcodingchellange.di
+package com.app.androidcodingchallenge.di
 
-import com.app.androidcodingchellange.data.QuizSchemaApi
-import com.app.androidcodingchellange.repositories.DefaultMainQuizRepository
-import com.app.androidcodingchellange.repositories.MainQuizRepository
-import com.app.androidcodingchellange.utils.BASE_URL
-import com.app.androidcodingchellange.utils.DispatcherProvider
+import com.app.androidcodingchallenge.data.QuizSchemaApi
+import com.app.androidcodingchallenge.repositories.DefaultMainQuizRepository
+import com.app.androidcodingchallenge.repositories.MainQuizRepository
+import com.app.androidcodingchallenge.utils.BASE_URL
+import com.app.androidcodingchallenge.utils.DispatcherProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Dispatcher
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton

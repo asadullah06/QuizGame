@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.app.androidcodingchellange">
+    package="com.app.androidcodingchallenge">
 
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".QuizGameApplication"
+        android:name="com.app.androidcodingchallenge.QuizGameApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AndroidCodingChellange">
+        android:theme="@style/Theme.AndroidCodingChallenge">
         <activity
-            android:name=".ui.SplashScreen"
+            android:name="com.app.androidcodingchallenge.ui.SplashScreen"
             android:exported="true"
-            android:theme="@style/Theme.AndroidCodingChellange.NoActionBar">
+            android:theme="@style/Theme.AndroidCodingChallenge.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.GameDashboardActivity" />
-        <activity android:name=".ui.MainQuizActivity" />
+        <activity android:name="com.app.androidcodingchallenge.ui.GameDashboardActivity" />
+        <activity android:name="com.app.androidcodingchallenge.ui.MainQuizActivity" />
     </application>
 
 </manifest>

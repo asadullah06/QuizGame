@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.utils
+package com.app.androidcodingchallenge.utils
 
 const val SPLASH_SCREEN_TIMER: Long = 1000 // in millisecond
 const val TOTAL_QUESTION_COUNT_DOWN: Long = 121000 // in millisecond

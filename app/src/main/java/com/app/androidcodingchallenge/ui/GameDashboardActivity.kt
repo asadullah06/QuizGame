@@ -1,11 +1,11 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.app.androidcodingchellange.BaseActivity
-import com.app.androidcodingchellange.R
-import com.app.androidcodingchellange.databinding.HomeScreenActivityBinding
+import com.app.androidcodingchallenge.BaseActivity
+import com.app.androidcodingchallenge.R
+import com.app.androidcodingchallenge.databinding.HomeScreenActivityBinding
 
 /**
  * Main Menu Screen will show the possible features of the screen i.e

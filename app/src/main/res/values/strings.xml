@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidCodingChellange</string>
+    <string name="app_name">AndroidCodingChallenge</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="start_game">Start new game</string>
     <string name="high_score_of_the_best_quiz_round">High score of the best quiz round</string>

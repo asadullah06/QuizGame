@@ -1,15 +1,15 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.androidcodingchellange.data.models.Question
-import com.app.androidcodingchellange.data.models.QuizSchemaResponse
-import com.app.androidcodingchellange.repositories.MainQuizRepository
-import com.app.androidcodingchellange.utils.DispatcherProvider
-import com.app.androidcodingchellange.utils.Resource
-import com.app.androidcodingchellange.utils.TOTAL_ANSWER_COUNT_DOWN
-import com.app.androidcodingchellange.utils.TOTAL_QUESTION_COUNT_DOWN
+import com.app.androidcodingchallenge.data.models.Question
+import com.app.androidcodingchallenge.data.models.QuizSchemaResponse
+import com.app.androidcodingchallenge.repositories.MainQuizRepository
+import com.app.androidcodingchallenge.utils.DispatcherProvider
+import com.app.androidcodingchallenge.utils.Resource
+import com.app.androidcodingchallenge.utils.TOTAL_ANSWER_COUNT_DOWN
+import com.app.androidcodingchallenge.utils.TOTAL_QUESTION_COUNT_DOWN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

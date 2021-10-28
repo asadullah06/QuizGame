@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import android.graphics.Color
 import android.util.Log
@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.app.androidcodingchellange.R
-import com.app.androidcodingchellange.data.models.Answers
+import com.app.androidcodingchallenge.R
+import com.app.androidcodingchallenge.data.models.Answers
 
 
 class AnswersListingAdapter(

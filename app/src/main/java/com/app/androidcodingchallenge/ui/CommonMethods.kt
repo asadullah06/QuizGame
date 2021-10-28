@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import java.util.concurrent.TimeUnit
 

@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange
+package com.app.androidcodingchallenge
 
 import org.junit.Test
 

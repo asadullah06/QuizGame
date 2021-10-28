@@ -1,14 +1,11 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.app.androidcodingchellange.databinding.SplashScreenBinding
-import com.app.androidcodingchellange.utils.SPLASH_SCREEN_TIMER
+import com.app.androidcodingchallenge.databinding.SplashScreenBinding
+import com.app.androidcodingchallenge.utils.SPLASH_SCREEN_TIMER
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.data.models
+package com.app.androidcodingchallenge.data.models
 
 data class Answers(
     val option: String,

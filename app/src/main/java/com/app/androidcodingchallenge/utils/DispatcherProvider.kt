@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.utils
+package com.app.androidcodingchallenge.utils
 
 import kotlinx.coroutines.CoroutineDispatcher
 

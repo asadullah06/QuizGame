@@ -1,6 +1,6 @@
-package com.app.androidcodingchellange.data
+package com.app.androidcodingchallenge.data
 
-import com.app.androidcodingchellange.data.models.QuizSchemaResponse
+import com.app.androidcodingchallenge.data.models.QuizSchemaResponse
 import retrofit2.Response
 import retrofit2.http.GET
 

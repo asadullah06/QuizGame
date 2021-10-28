@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.ui
+package com.app.androidcodingchallenge.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -7,12 +7,12 @@ import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.app.androidcodingchellange.BaseActivity
-import com.app.androidcodingchellange.R
-import com.app.androidcodingchellange.data.models.Answers
-import com.app.androidcodingchellange.data.models.Question
-import com.app.androidcodingchellange.databinding.MainQuizActivityBinding
-import com.app.androidcodingchellange.utils.ANSWER_TYPE_MULTI_CHOICE
+import com.app.androidcodingchallenge.BaseActivity
+import com.app.androidcodingchallenge.R
+import com.app.androidcodingchallenge.data.models.Answers
+import com.app.androidcodingchallenge.data.models.Question
+import com.app.androidcodingchallenge.databinding.MainQuizActivityBinding
+import com.app.androidcodingchallenge.utils.ANSWER_TYPE_MULTI_CHOICE
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,8 +91,25 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
         when (view?.id) {
             R.id.btn_check -> {
                 if (binding.btnCheck.text == getString(R.string.check)) {
-                    viewModel.checkIsAnswerCorrect()
-                    binding.btnCheck.text = getString(R.string.next)
+                    var canCheckAnswer = false
+                    run loop@{
+                        answersListingAdapter.answerOptionsList.forEach {
+                            if (it.isOptionSelected) {
+                                canCheckAnswer = true
+                                return@loop
+                            }
+                        }
+                    }
+                    if (canCheckAnswer) {
+                        viewModel.checkIsAnswerCorrect()
+                        binding.btnCheck.text = getString(R.string.next)
+                    } else {
+                        Snackbar.make(
+                            binding.root,
+                            "Must select an option to check",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
                 } else
                     viewModel.loadNextQuestion()
             }

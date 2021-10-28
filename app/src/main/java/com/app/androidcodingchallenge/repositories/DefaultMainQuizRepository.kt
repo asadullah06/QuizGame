@@ -1,8 +1,8 @@
-package com.app.androidcodingchellange.repositories
+package com.app.androidcodingchallenge.repositories
 
-import com.app.androidcodingchellange.data.QuizSchemaApi
-import com.app.androidcodingchellange.data.models.QuizSchemaResponse
-import com.app.androidcodingchellange.utils.Resource
+import com.app.androidcodingchallenge.data.QuizSchemaApi
+import com.app.androidcodingchallenge.data.models.QuizSchemaResponse
+import com.app.androidcodingchallenge.utils.Resource
 import java.lang.Exception
 import javax.inject.Inject
 

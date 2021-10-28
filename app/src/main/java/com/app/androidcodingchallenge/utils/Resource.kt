@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange.utils
+package com.app.androidcodingchallenge.utils
 
 sealed class Resource<T>(val data: T?, val message: String?)  {
 

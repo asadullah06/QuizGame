@@ -1,4 +1,4 @@
-package com.app.androidcodingchellange
+package com.app.androidcodingchallenge
 
 import androidx.appcompat.app.AppCompatActivity
 
