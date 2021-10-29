@@ -1,10 +1,13 @@
 package com.app.androidcodingchallenge.ui.gameMainQuiz
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,7 +49,7 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
         questionObject: Question
     ) {
         binding.textViewQuestion.text = questionObject.question
-
+        binding.textViewQuestionScore.text = "${questionObject.score}"
         if (questionObject.questionImageUrl.isNullOrEmpty().not()) {
             binding.imageVewQuestion.isVisible = true
             Picasso.get().load(questionObject.questionImageUrl).into(binding.imageVewQuestion)
@@ -55,8 +58,10 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
         }
         if (questToPopIndex == 0)
             setTotalQuestionsCount(totalQCount)
-        else
+        else {
             updateQuestionsProgress(questToPopIndex + 1, totalQCount)
+            startTransition()
+        }
 
         val answers = questionObject.answers
         val answersList: ArrayList<Answers> = ArrayList()
@@ -66,7 +71,7 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
         }
         val isAnswersTypeMultiSelect = (questionObject.type == ANSWER_TYPE_MULTI_CHOICE) ||
                 (questionObject.correctAnswer.split(",").size > 1)
-        answersListingAdapter = AnswersListingAdapter(isAnswersTypeMultiSelect, answersList)
+        answersListingAdapter = AnswersListingAdapter(this, isAnswersTypeMultiSelect, answersList)
         binding.answersRecyclerview.adapter = answersListingAdapter
         binding.answersRecyclerview.layoutManager = LinearLayoutManager(this)
     }
@@ -137,6 +142,7 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
                         //Below methods are called to stop answer timer if on and start question time
                         viewModel.stopAnswerCountDown()
                         viewModel.startQuestionCountDown()
+
                     }
                     is MainQuizViewModel.QuizSchemaEvents.CheckIsAnswerCorrect -> {
                         Log.i(TAG, "is answer correct checking")
@@ -149,6 +155,12 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
                         //Below methods are called to stop question and start answer time
                         viewModel.stopQuestionCountDown()
                         viewModel.startAnswerCountDown()
+                    }
+                    is MainQuizViewModel.QuizSchemaEvents.GameCompleted -> {
+                        Log.i(TAG, "completed the game")
+                        Toast.makeText(applicationContext, events.message, Snackbar.LENGTH_LONG)
+                            .show()
+                        finish()
                     }
                     is MainQuizViewModel.QuizSchemaEvents.Failure -> {
                         binding.pbLoading.isVisible = false
@@ -187,6 +199,9 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
                         Log.i(TAG, "QuestionTimerFinished")
                         viewModel.checkIsAnswerCorrect()
                         viewModel.startAnswerCountDown()
+
+                        // change the text of button to next
+                        binding.btnCheck.text = getString(R.string.next)
                     }
                     else -> Unit
                 }
@@ -242,6 +257,7 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
 
             //below method will update the current total score as answer of the question is correct.
             viewModel.updateCurrentGameScore(questionScore)
+            binding.textViewCurrentScore.text = "${viewModel.currentGameScore}"
         } else {
             updateAnswerResults("Your answer is Incorrect!", 2)
         }
@@ -256,10 +272,16 @@ class MainQuizActivity : BaseActivity(), View.OnClickListener {
     private fun updateAnswerResults(message: String, resultType: Int) {
         binding.textViewAnswerResult.text = message
         if (resultType == 1) {
-            binding.textViewAnswerResult.setTextColor(Color.GREEN)
+            binding.textViewAnswerResult.setTextColor(ContextCompat.getColor(this, R.color.green))
         } else if (resultType == 2) {
-            binding.textViewAnswerResult.setTextColor(Color.RED)
+            binding.textViewAnswerResult.setTextColor(ContextCompat.getColor(this, R.color.red))
         }
-
     }
+
+    private fun startTransition() {
+        val animation = AnimationUtils.loadAnimation(this, R.anim.righttoleft)
+        animation.duration = 300
+        binding.parentLayout.startAnimation(animation)
+    }
+
 }
