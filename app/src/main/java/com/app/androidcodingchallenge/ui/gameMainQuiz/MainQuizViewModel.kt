@@ -43,6 +43,7 @@ class MainQuizViewModel @Inject constructor(
         class Failure(val errorText: String) : QuizSchemaEvents()
         object Loading : QuizSchemaEvents()
         class CheckIsAnswerCorrect(val questionObject: Question) : QuizSchemaEvents()
+        class GameCompleted(val message: String, val tag: String = "") : QuizSchemaEvents()
         object Empty : QuizSchemaEvents()
     }
 
@@ -54,7 +55,7 @@ class MainQuizViewModel @Inject constructor(
     }
 
     private var gameHighestScore: Long = 0L
-    private var currentGameScore: Long = 0L
+    var currentGameScore: Long = 0L
     val questionTimerStateFlow = MutableStateFlow<TimerEvents>(TimerEvents.Empty)
     val answerTimerStateFlow = MutableStateFlow<TimerEvents>(TimerEvents.Empty)
 
@@ -75,10 +76,8 @@ class MainQuizViewModel @Inject constructor(
     }
 
     private fun addGameScore() {
-        if (currentGameScore > gameHighestScore) {
-            viewModelScope.launch(dispatcher.main) {
-                gameScoresRepository.addGameScore(GameScoresEntity(currentGameScore))
-            }
+        viewModelScope.launch(dispatcher.main) {
+            gameScoresRepository.addGameScore(GameScoresEntity(currentGameScore))
         }
     }
 
@@ -110,6 +109,14 @@ class MainQuizViewModel @Inject constructor(
                     response.questions.size,
                     response.questions[questionToPopulateIndex]
                 )
+            } else {
+                // this will  check the current score with Game highest score and update accordingly
+                if (currentGameScore > gameHighestScore) {
+                    _quizSchema.value = QuizSchemaEvents.GameCompleted("Congratulations you have scored highest score!", HIGHEST_SCORE)
+                    addGameScore()
+                }else{
+                    _quizSchema.value = QuizSchemaEvents.GameCompleted("Batter luck next time - unable to beat the game highest score!")
+                }
             }
         }
     }
@@ -178,10 +185,8 @@ class MainQuizViewModel @Inject constructor(
 
     /**
      * below method will update the score of so far answered questions.
-     * and check the game highest score as well accordingly.
      */
     fun updateCurrentGameScore(highestScore: Int) {
         currentGameScore += highestScore
-        addGameScore()
     }
 }

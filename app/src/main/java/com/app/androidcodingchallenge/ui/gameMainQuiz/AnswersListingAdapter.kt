@@ -1,5 +1,6 @@
 package com.app.androidcodingchallenge.ui.gameMainQuiz
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.app.androidcodingchallenge.R
@@ -15,6 +17,7 @@ import com.app.androidcodingchallenge.data.models.Answers
 
 
 class AnswersListingAdapter(
+    private val context:Context,
     private val isAnswersTypeMultiSelect: Boolean,
     var answerOptionsList: List<Answers>,
 ) :
@@ -62,8 +65,8 @@ class AnswersListingAdapter(
 
         if (isAnswersTypeMultiSelect.not()) {
             if (answer.isOptionSelected) {
-                holder.parentLayout.setBackgroundColor(Color.GRAY)
-                holder.textView.setTextColor(Color.GREEN)
+                holder.parentLayout.setBackgroundColor(ContextCompat.getColor(context,R.color.gray))
+                holder.textView.setTextColor(ContextCompat.getColor(context,R.color.green))
             } else {
                 holder.parentLayout.setBackgroundColor(Color.WHITE)
                 holder.textView.setTextColor(Color.BLACK)
@@ -72,11 +75,11 @@ class AnswersListingAdapter(
         if (checkAnswerFlag) {
             when (getBackgroundColorCode(answer)) {
                 1 -> {
-                    holder.parentLayout.setBackgroundColor(Color.GREEN)
+                    holder.parentLayout.setBackgroundColor(ContextCompat.getColor(context,R.color.green))
                     holder.textView.setTextColor(Color.WHITE)
                 }
                 2 -> {
-                    holder.parentLayout.setBackgroundColor(Color.RED)
+                    holder.parentLayout.setBackgroundColor(ContextCompat.getColor(context,R.color.red))
                     holder.textView.setTextColor(Color.WHITE)
                 }
                 3 -> {
